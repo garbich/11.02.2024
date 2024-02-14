@@ -1,36 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace WindowsFormsApp4
 {
     public partial class Form1 : Form
     {
-        
+
         private int score = 0;
         private int missed = 0;
+       
         private Random rand = new Random();
         private List<PictureBox> pictureBoxes = new List<PictureBox>();
+        //private List<PictureBox> pictureForDelete = new List<PictureBox>();
+        private object lockObject = new object();
 
-        
-        
         public Form1()
         {
             InitializeComponent();
-            timer3.Interval = 10;
+            timer3.Interval = 300;
             timer3.Start();
             timer1.Interval = 10;
             timer1.Start();
-            timer2.Interval = 550;
+            timer2.Interval = 1500;
             timer2.Start();
+            timer4.Start();
+            timer4.Interval = 300;
 
-           
+
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -40,21 +40,22 @@ namespace WindowsFormsApp4
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            foreach(var item in pictureBoxes)
+            foreach (var item in pictureBoxes)
             {
-               
+
                 item.Location = new Point(item.Location.X, item.Location.Y + 1);
             }
-           
+
 
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             PictureBox picture1 = (PictureBox)sender;
-            
+
             this.Controls.Remove(picture1);
-            
+            pictureBoxes.Remove(picture1);
+
             score++;
             label1.Text = $"Score: {score.ToString()}";
         }
@@ -73,24 +74,45 @@ namespace WindowsFormsApp4
 
         private int randForY()
         {
-            return rand.Next(100, Screen.PrimaryScreen.Bounds.Width);
+            return rand.Next(100, Screen.PrimaryScreen.Bounds.Width - 50);
         }
 
         private void timer3_Tick(object sender, EventArgs e)
         {
-            foreach (var item in pictureBoxes)
+            lock (lockObject)
             {
-                // cycle for
-                if(item.Location.Y > Screen.PrimaryScreen.Bounds.Height)
+                List<PictureBox> pictureToDelete = new List<PictureBox>();
+                foreach (var item in pictureBoxes)
                 {
-                    label2.Text = $"Missed: {missed.ToString()}";
-                    missed++;
+                    if (item.Location.Y > this.Bounds.Height)
+                    {
+                        this.Controls.Remove(item);
+                        pictureToDelete.Add(item);
+
+                    }
+                }
+
+                foreach (var item in pictureToDelete)
+                {
 
                     pictureBoxes.Remove(item);
-                    
+                    addIncrement();
                 }
-                
             }
+
+
+
+        }
+
+        private void timer4_Tick(object sender, EventArgs e)
+        {
+
+            label2.Text = $"Missed: {missed.ToString()}";
+        }
+
+        private void addIncrement()
+        {
+            Interlocked.Increment(ref missed);
         }
     }
 }

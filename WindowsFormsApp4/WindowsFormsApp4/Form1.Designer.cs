@@ -34,6 +34,7 @@
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.timer3 = new System.Windows.Forms.Timer(this.components);
             this.label2 = new System.Windows.Forms.Label();
+            this.timer4 = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // timer1
@@ -68,6 +69,10 @@
             this.label2.TabIndex = 2;
             this.label2.Text = "Missed:";
             // 
+            // timer4
+            // 
+            this.timer4.Tick += new System.EventHandler(this.timer4_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -89,6 +94,7 @@
         private System.Windows.Forms.Timer timer2;
         private System.Windows.Forms.Timer timer3;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Timer timer4;
     }
 }
 
